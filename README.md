@@ -2,6 +2,12 @@
 
 This repository contains a template for managing Kubernetes applications using ArgoCD with a structured approach for different environments: test, staging, and production.
 
+## argocd get password
+
+```sh
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+
 ## Kustomize
 
 <https://github.com/kubernetes-sigs/kustomize>
