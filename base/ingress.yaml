@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: example-api-ingress
+  namespace: demo
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /example-api
+            pathType: Prefix
+            backend:
+              service:
+                name: example-api-service
+                port:
+                  number: 80

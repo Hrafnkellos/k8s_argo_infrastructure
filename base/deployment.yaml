@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-api
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: example-api
+  template:
+    metadata:
+      labels:
+        app: example-api
+    spec:
+      containers:
+        - name: echo
+          image: hashicorp/http-echo
+          resources:
+            requests:
+              memory: "12Mi"
+              cpu: "2m"
+            limits:
+              memory: "32Mi"
+              cpu: "50m"
+          args:
+            - "-text=Hello from K3s API"
+          ports:
+            - containerPort: 5678
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5678

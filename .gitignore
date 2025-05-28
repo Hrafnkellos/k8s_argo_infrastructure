@@ -1,0 +1,15 @@
+# Ignore editor and OS files
+*.swp
+*.swo
+*.bak
+*.tmp
+.DS_Store
+
+# Ignore logs
+*.log
+
+# Ignore local kustomize build output
+.kustomize/
+
+# Ignore Helm files if used
+charts/
