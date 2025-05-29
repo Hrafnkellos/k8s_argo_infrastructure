@@ -1,0 +1,74 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jenkins
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"  # Sync after infrastructure
+spec:
+  project: default
+  source:
+    chart: jenkins
+    repoURL: https://charts.jenkins.io
+    targetRevision: 4.7.1  # Using a stable version
+    helm:
+      releaseName: jenkins
+      values: |
+        controller:
+          serviceType: ClusterIP
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
+          installPlugins:
+            - kubernetes:1.31.3
+            - workflow-aggregator:2.6
+            - git:4.15.0
+            - configuration-as-code:1.55
+          javaOpts: >-
+            -Djenkins.install.runSetupWizard=false
+            -Dhudson.model.DirectoryBrowserSupport.CSP=""
+          persistence:
+            storageClass: "local-path"
+            size: 10Gi
+          serviceAccount:
+            create: true
+            name: jenkins
+            annotations: {}
+          rbac:
+            create: true
+            readSecrets: true
+        serviceAccount:
+          create: true
+          annotations: {}
+        rbac:
+          create: true
+          readSecrets: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: jenkins
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  health:
+    status: Healthy
+    message: "Jenkins is healthy"
+  info:
+    - name: Description
+      value: "Jenkins CI/CD Server"
+    - name: Maintainer
+      value: "Hrafnkellos"
+    - name: Version
+      value: "4.7.1" 
