@@ -1,0 +1,72 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: artifactory-oss
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"  # Sync after infrastructure
+    argocd.argoproj.io/description: "JFrog Artifactory OSS - Universal Artifact Repository"
+    argocd.argoproj.io/maintainer: "Hrafnkellos"
+    argocd.argoproj.io/version: "12.3.0"
+spec:
+  project: default
+  source:
+    chart: artifactory-oss
+    repoURL: https://charts.jfrog.io
+    targetRevision: 12.3.0  # Using a stable version
+    helm:
+      releaseName: artifactory-oss
+      values: |
+        artifactory:
+          service:
+            type: ClusterIP
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
+          persistence:
+            storageClass: "local-path"
+            size: 20Gi
+          nginx:
+            enabled: true
+            service:
+              type: ClusterIP
+            resources:
+              requests:
+                cpu: "100m"
+                memory: "128Mi"
+              limits:
+                cpu: "200m"
+                memory: "256Mi"
+          postgresql:
+            enabled: true
+            postgresqlUsername: artifactory
+            postgresqlPassword: ""  # Will be set via sealed secret
+            persistence:
+              storageClass: "local-path"
+              size: 8Gi
+            resources:
+              requests:
+                cpu: "100m"
+                memory: "256Mi"
+              limits:
+                cpu: "200m"
+                memory: "512Mi"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: artifactory
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m 

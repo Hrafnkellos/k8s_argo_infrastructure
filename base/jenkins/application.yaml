@@ -5,6 +5,9 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/sync-wave: "1"  # Sync after infrastructure
+    argocd.argoproj.io/description: "Jenkins CI/CD Server"
+    argocd.argoproj.io/maintainer: "Hrafnkellos"
+    argocd.argoproj.io/version: "4.7.1"
 spec:
   project: default
   source:
@@ -61,14 +64,4 @@ spec:
       backoff:
         duration: 5s
         factor: 2
-        maxDuration: 3m
-  health:
-    status: Healthy
-    message: "Jenkins is healthy"
-  info:
-    - name: Description
-      value: "Jenkins CI/CD Server"
-    - name: Maintainer
-      value: "Hrafnkellos"
-    - name: Version
-      value: "4.7.1" 
+        maxDuration: 3m 

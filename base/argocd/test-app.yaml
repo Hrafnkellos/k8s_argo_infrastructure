@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infrastructure-repo-test
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/description: "Test Environment Infrastructure"
+    argocd.argoproj.io/maintainer: "Hrafnkellos"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/hrafnkell/k8s_argo_infrastructure.git
+    targetRevision: addJenking
+    path: overlays/test
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m 

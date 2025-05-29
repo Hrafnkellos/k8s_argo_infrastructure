@@ -1,39 +1,75 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: infrastructure
+  name: argocd
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "0"  # Ensures this app is synced first
-    argocd.argoproj.io/compare-options: IgnoreExtraneous  # Ignores fields not in git
+    argocd.argoproj.io/sync-wave: "0"  # First application to be synced
+    argocd.argoproj.io/description: "ArgoCD GitOps Continuous Delivery"
+    argocd.argoproj.io/maintainer: "Hrafnkellos"
+    argocd.argoproj.io/version: "5.51.4"
 spec:
   project: default
   source:
-    repoURL: https://github.com/Hrafnkellos/k8s_argo_infrastructure.git
-    targetRevision: HEAD
-    path: overlays/test   # Change this to the path you want ArgoCD to sync
+    chart: argo-cd
+    repoURL: https://argoproj.github.io/argo-helm
+    targetRevision: 5.51.4  # Using a stable version
+    helm:
+      releaseName: argocd
+      values: |
+        server:
+          service:
+            type: ClusterIP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          extraArgs:
+            - --insecure  # For development only, remove in production
+          config:
+            url: https://argocd.example.com  # Update this with your domain
+        repoServer:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+        applicationSet:
+          enabled: true
+        notifications:
+          enabled: true
+        dex:
+          enabled: false  # Disable Dex if you're not using SSO
+        redis:
+          enabled: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+        configs:
+          secret:
+            argocdServerAdminPassword: "$2a$10$mzW3x5x5x5x5x5x5x5x5.5x5x5x5x5x5x5x5x5x5x5x5x5x5x5x5"  # "admin" - change this!
+            argocdServerAdminPasswordMtime: "2024-01-01T00:00:00Z"
   destination:
     server: https://kubernetes.default.svc
-    namespace: default         # Change to your target namespace
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-      allowEmpty: false  # Prevents sync if the target directory is empty
     syncOptions:
-      - CreateNamespace=true  # Creates namespace if it doesn't exist
-      - PruneLast=true  # Ensures resources are pruned last
+      - CreateNamespace=true
     retry:
       limit: 5
       backoff:
         duration: 5s
         factor: 2
         maxDuration: 3m
-  health:
-    status: Healthy
-    message: "Application is healthy"
-  info:
-    - name: Description
-      value: "Infrastructure deployment for test environment"
-    - name: Maintainer
-      value: "Hrafnkellos"

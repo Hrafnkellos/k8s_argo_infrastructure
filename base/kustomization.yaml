@@ -4,3 +4,5 @@ resources:
   - example-api
   - argocd
   - jenkins
+  - sealed-secrets
+  - artifactory
