@@ -3,8 +3,6 @@ kind: Kustomization
 
 resources:
   - application.yaml
-  - repo-app.yaml
-  - test-app.yaml
-  
+
 
 

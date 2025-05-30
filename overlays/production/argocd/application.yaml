@@ -1,23 +1,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: infrastructure-repo
+  name: infrastructure-repo-production
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/hrafnkell/k8s_argo_infrastructure.git  # Update this with your actual repository URL
+    repoURL: https://github.com / hrafnkell / k8s_argo_infrastructure.git  # Update this with your actual repository URL
     targetRevision: addJenking  # Changed to watch addJenking branch
-    path: overlays/production  # This is the path to your kustomization directory
+    path: overlays / production  # This is the path to your kustomization directory
   destination:
-    server: https://kubernetes.default.svc
+    server: https: // kubernetes.default.svc
     namespace: argocd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+      - CreateNamespace = true
     retry:
       limit: 5
       backoff:

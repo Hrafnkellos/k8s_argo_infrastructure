@@ -5,22 +5,22 @@ metadata:
   namespace: argocd
   annotations:
     argocd.argoproj.io/description: "Test Environment Infrastructure"
-    argocd.argoproj.io/maintainer: "Hrafnkellos"
+    argocd.argoproj / io / maintainer: "Hrafnkellos"
 spec:
   project: default
   source:
-    repoURL: https://github.com/hrafnkell/k8s_argo_infrastructure.git
+    repoURL: https://github.com / hrafnkell / k8s_argo_infrastructure.git
     targetRevision: addJenking
-    path: overlays/test
+    path: overlays / test
   destination:
-    server: https://kubernetes.default.svc
+    server: https: // kubernetes.default.svc
     namespace: argocd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+      - CreateNamespace = true
     retry:
       limit: 5
       backoff:
