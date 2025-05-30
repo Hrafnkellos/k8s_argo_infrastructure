@@ -1,0 +1,11 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  selector:
+    matchLabels:
+      app: argocd
+  source:
+    targetRevision: addJenking

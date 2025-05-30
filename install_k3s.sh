@@ -17,10 +17,8 @@ echo "Machine IP address: $MACHINE_IP"
 
 # Install k3s (with --write-kubeconfig-mode=0644 so that the kubeconfig is readable by your user)
 echo "Installing k3s (with --write-kubeconfig-mode=0644) ..."
+#curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--tls-san $MACHINE_IP --write-kubeconfig-mode=0644" sh -
 curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--write-kubeconfig-mode=0644" sh -
-
-# (Optional) chown the k3s config directory (if you still need it)
-# chown -R $USER:$USER /etc/rancher
 
 # Wait for k3s to be ready
 echo "Waiting for k3s to be ready..."

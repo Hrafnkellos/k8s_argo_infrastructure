@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jenkins
+spec:
+  source:
+    repoURL: https://charts.jenkins.io
+    chart: jenkins
+    targetRevision: 5.2.0
+    helm:
+      values: |
+        controller:
+          serviceType: NodePort
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: jenkins
+  project: default

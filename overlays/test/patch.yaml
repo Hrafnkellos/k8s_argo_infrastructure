@@ -4,9 +4,9 @@ metadata:
   name: example-api
   namespace: demo
 spec:
-    replicas: 1
-    selector:
-      matchLabels:
-        app: example-api
+  replicas: 1
+  selector:
+    matchLabels:
+      app: example-api
       
 

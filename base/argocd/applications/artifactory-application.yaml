@@ -2,12 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: artifactory-oss
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"  # Sync after infrastructure
-    argocd.argoproj.io/description: "JFrog Artifactory OSS - Universal Artifact Repository"
-    argocd.argoproj.io/maintainer: "Hrafnkellos"
-    argocd.argoproj.io/version: "12.3.0"
+  namespace: artifactory
 spec:
   project: default
   source:
