@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: argocd
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"  # Ensure ArgoCD syncs itself first
 spec:
   project: default
   source:
@@ -11,8 +13,12 @@ spec:
     path: addJenking   # Change this to the path you want ArgoCD to sync
   destination:
     server: https://kubernetes.default.svc
-    namespace: default         # Change to your target namespace
+    namespace: argocd  # ArgoCD should be installed in its own namespace
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true
