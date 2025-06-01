@@ -9,8 +9,8 @@ spec:
   project: default
   source:
     repoURL: https://github.com/Hrafnkellos/k8s_argo_infrastructure
-    targetRevision: HEAD
-    path: addJenking   # Change this to the path you want ArgoCD to sync
+    targetRevision: AddJenking
+    path: overlays/test   # Change this to the path you want ArgoCD to sync
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd  # ArgoCD should be installed in its own namespace
