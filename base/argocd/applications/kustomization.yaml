@@ -6,5 +6,6 @@ resources:
   - argocd-application.yaml
   - jenkins-application.yaml
   - artifactory-application.yaml
+  - postgresql-application.yaml
   #- jenkins-namespace.yaml
   #- artifactory-namespace.yaml
