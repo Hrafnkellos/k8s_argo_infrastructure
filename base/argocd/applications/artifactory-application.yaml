@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: artifactory-oss
   namespace: artifactory
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
@@ -25,6 +27,7 @@ spec:
           persistence:
             storageClass: "local-path"
             size: 20Gi
+            mountPath: "/var/opt/jfrog/artifactory"
           nginx:
             enabled: true
             service:
@@ -41,16 +44,33 @@ spec:
             auth:
               username: artifactory
               password: ""  # Will be set via sealed secret
-            persistence:
-              storageClass: "local-path"
-              size: 8Gi
-            resources:
-              requests:
-                cpu: "100m"
-                memory: "256Mi"
-              limits:
-                cpu: "200m"
-                memory: "512Mi"
+              database: artifactory
+            primary:
+              persistence:
+                storageClass: "local-path"
+                size: 8Gi
+                mountPath: "/var/lib/postgresql/data"
+              resources:
+                requests:
+                  cpu: "100m"
+                  memory: "256Mi"
+                limits:
+                  cpu: "200m"
+                  memory: "512Mi"
+              backup:
+                enabled: true
+                schedule: "0 0 * * *"  # Daily at midnight
+                retention: 7  # Keep backups for 7 days
+          ingress:
+            enabled: false  # Enable if you need external access
+          systemYaml:
+            shared:
+              database:
+                type: postgresql
+                driver: org.postgresql.Driver
+                url: jdbc:postgresql://artifactory-oss-postgresql:5432/artifactory
+                username: ${POSTGRES_USER}
+                password: ${POSTGRES_PASSWORD}
   destination:
     server: https://kubernetes.default.svc
     namespace: artifactory
@@ -58,6 +78,9 @@ spec:
     automated:
       prune: true
       selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
     retry:
       limit: 5
       backoff:
