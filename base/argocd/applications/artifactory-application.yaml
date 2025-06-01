@@ -8,7 +8,7 @@ spec:
   source:
     chart: artifactory-oss
     repoURL: https://charts.jfrog.io
-    targetRevision: 12.5.3  # Latest stable version
+    targetRevision: 107.111.8  # Latest stable version
     helm:
       releaseName: artifactory-oss
       values: |
