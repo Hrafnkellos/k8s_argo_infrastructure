@@ -8,5 +8,6 @@ resources:
   - artifactory-application.yaml
   - postgresql-application.yaml
   - nginx-application.yaml
+  - nginx-config.yaml
   #- jenkins-namespace.yaml
   #- artifactory-namespace.yaml

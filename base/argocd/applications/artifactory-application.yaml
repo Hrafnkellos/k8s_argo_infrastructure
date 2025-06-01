@@ -40,6 +40,15 @@ spec:
                 url: jdbc:postgresql://artifactory-postgresql:5432/artifactory
                 username: ${POSTGRES_USER}
                 password: ${POSTGRES_PASSWORD}
+              node:
+                ip: artifactory-nginx
+                port: 8080
+                haEnabled: false
+              router:
+                entrypoints:
+                  externalPort: 8080
+                  internalPort: 8081
+                  sslEnabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: artifactory

@@ -64,6 +64,8 @@ spec:
             extraVolumes:
               - name: nginx-logs
                 emptyDir: {}
+            nginxCustomConfigMap: artifactory-nginx-config
+            nginxCustomServerBlockConfigMap: artifactory-nginx-server-block
   destination:
     server: https://kubernetes.default.svc
     namespace: artifactory
