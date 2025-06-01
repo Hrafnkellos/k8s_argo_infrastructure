@@ -29,42 +29,7 @@ spec:
             size: 20Gi
             mountPath: "/var/opt/jfrog/artifactory"
           nginx:
-            enabled: true
-            service:
-              type: ClusterIP
-            resources:
-              requests:
-                cpu: "100m"
-                memory: "128Mi"
-              limits:
-                cpu: "200m"
-                memory: "256Mi"
-            persistence:
-              enabled: true
-              storageClass: "local-path"
-              size: 1Gi
-              mountPath: "/var/opt/jfrog/nginx"
-            securityContext:
-              enabled: true
-              fsGroup: 1030
-              runAsGroup: 1030
-              runAsUser: 1030
-            containerSecurityContext:
-              enabled: true
-              runAsUser: 1030
-              runAsNonRoot: true
-              allowPrivilegeEscalation: false
-              capabilities:
-                drop:
-                  - ALL
-              seccompProfile:
-                type: RuntimeDefault
-            extraVolumeMounts:
-              - name: nginx-logs
-                mountPath: /var/log/nginx
-            extraVolumes:
-              - name: nginx-logs
-                emptyDir: {}
+            enabled: false
           postgresql:
             enabled: false
           systemYaml:

@@ -1,0 +1,82 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: artifactory-nginx
+  namespace: artifactory
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    chart: artifactory-oss
+    repoURL: https://charts.jfrog.io
+    targetRevision: 107.111.8
+    helm:
+      releaseName: artifactory-nginx
+      values: |
+        artifactory:
+          enabled: false
+          nginx:
+            enabled: true
+            service:
+              type: ClusterIP
+            resources:
+              requests:
+                cpu: "100m"
+                memory: "128Mi"
+              limits:
+                cpu: "200m"
+                memory: "256Mi"
+            persistence:
+              enabled: true
+              storageClass: "local-path"
+              size: 1Gi
+              mountPath: "/var/opt/jfrog/nginx"
+            securityContext:
+              enabled: true
+              fsGroup: 107
+              runAsGroup: 107
+              runAsUser: 104
+            containerSecurityContext:
+              enabled: true
+              runAsUser: 1030
+              runAsNonRoot: true
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop:
+                  - ALL
+              seccompProfile:
+                type: RuntimeDefault
+            initContainers:
+              - name: setup-dirs
+                image: busybox
+                command: ["sh", "-c", "mkdir -p /var/opt/jfrog/nginx/logrotate /var/opt/jfrog/nginx/logs /var/log/nginx && chown -R 1030:107 /var/opt/jfrog/nginx /var/log/nginx && chmod -R 775 /var/opt/jfrog/nginx /var/log/nginx"]
+                securityContext:
+                  runAsUser: 0
+                volumeMounts:
+                  - name: nginx-data
+                    mountPath: /var/opt/jfrog/nginx
+                  - name: nginx-logs
+                    mountPath: /var/log/nginx
+            extraVolumeMounts:
+              - name: nginx-logs
+                mountPath: /var/log/nginx
+            extraVolumes:
+              - name: nginx-logs
+                emptyDir: {}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: artifactory
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m 

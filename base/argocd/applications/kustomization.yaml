@@ -7,5 +7,6 @@ resources:
   - jenkins-application.yaml
   - artifactory-application.yaml
   - postgresql-application.yaml
+  - nginx-application.yaml
   #- jenkins-namespace.yaml
   #- artifactory-namespace.yaml
