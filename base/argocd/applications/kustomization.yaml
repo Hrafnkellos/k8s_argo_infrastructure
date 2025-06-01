@@ -6,5 +6,5 @@ resources:
   - argocd-application.yaml
   - jenkins-application.yaml
   - artifactory-application.yaml
-  - jenkins-namespace.yaml
-  - artifactory-namespace.yaml
+  #- jenkins-namespace.yaml
+  #- artifactory-namespace.yaml
