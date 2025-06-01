@@ -49,7 +49,14 @@ spec:
               persistence:
                 storageClass: "local-path"
                 size: 8Gi
-                mountPath: "/var/lib/postgresql/data"
+                mountPath: "/bitnami/postgresql"
+              securityContext:
+                enabled: true
+                fsGroup: 1001
+                runAsUser: 1001
+              containerSecurityContext:
+                enabled: true
+                runAsUser: 1001
               resources:
                 requests:
                   cpu: "100m"
