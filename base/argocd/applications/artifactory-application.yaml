@@ -59,21 +59,6 @@ spec:
                   - ALL
               seccompProfile:
                 type: RuntimeDefault
-            initContainers:
-              - name: setup
-                image: releases-docker.jfrog.io/ubi9/ubi-minimal:9.5.1742914212
-                command: ["/bin/sh", "-c", "rm -rfv /var/opt/jfrog/nginx/lost+found; mkdir -p /var/opt/jfrog/nginx/logs;"]
-                securityContext:
-                  allowPrivilegeEscalation: false
-                  capabilities:
-                    drop:
-                      - ALL
-                  runAsNonRoot: true
-                  seccompProfile:
-                    type: RuntimeDefault
-                volumeMounts:
-                  - name: nginx-data
-                    mountPath: /var/opt/jfrog/nginx
           postgresql:
             enabled: false
           systemYaml:
