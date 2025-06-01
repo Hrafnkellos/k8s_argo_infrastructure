@@ -46,9 +46,9 @@ spec:
               mountPath: "/var/opt/jfrog/nginx"
             securityContext:
               enabled: true
-              fsGroup: 107
-              runAsGroup: 107
-              runAsUser: 104
+              fsGroup: 1030
+              runAsGroup: 1030
+              runAsUser: 1030
             containerSecurityContext:
               enabled: true
               runAsUser: 1030
@@ -59,17 +59,6 @@ spec:
                   - ALL
               seccompProfile:
                 type: RuntimeDefault
-            initContainers:
-              - name: setup-dirs
-                image: busybox
-                command: ["sh", "-c", "mkdir -p /var/opt/jfrog/nginx/logrotate /var/opt/jfrog/nginx/logs /var/log/nginx && chown -R 1030:107 /var/opt/jfrog/nginx /var/log/nginx && chmod -R 775 /var/opt/jfrog/nginx /var/log/nginx"]
-                securityContext:
-                  runAsUser: 0
-                volumeMounts:
-                  - name: nginx-data
-                    mountPath: /var/opt/jfrog/nginx
-                  - name: nginx-logs
-                    mountPath: /var/log/nginx
             extraVolumeMounts:
               - name: nginx-logs
                 mountPath: /var/log/nginx
