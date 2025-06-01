@@ -60,6 +60,14 @@ spec:
                 volumeMounts:
                   - name: nginx-data
                     mountPath: /var/opt/jfrog/nginx
+              - name: init-create-logs
+                image: busybox
+                command: ["sh", "-c", "mkdir -p /var/opt/jfrog/nginx/logs && touch /var/opt/jfrog/nginx/logs/error.log /var/opt/jfrog/nginx/logs/access.log && chown -R 103:107 /var/opt/jfrog/nginx/logs && chmod -R 755 /var/opt/jfrog/nginx/logs"]
+                securityContext:
+                  runAsUser: 0
+                volumeMounts:
+                  - name: nginx-data
+                    mountPath: /var/opt/jfrog/nginx
           postgresql:
             enabled: false
           systemYaml:
