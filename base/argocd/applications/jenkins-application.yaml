@@ -10,7 +10,15 @@ spec:
     helm:
       values: |
         controller:
-          serviceType: NodePort
+          serviceType: ClusterIP
+          servicePort: 8080
+          ingress:
+            enabled: true
+            annotations:
+              traefik.ingress.kubernetes.io/router.entrypoints: web
+            hostName: jenkins.local
+            path: /
+            pathType: Prefix
   destination:
     server: https://kubernetes.default.svc
     namespace: jenkins
