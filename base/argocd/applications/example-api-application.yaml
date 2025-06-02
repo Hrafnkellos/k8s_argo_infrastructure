@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/Hrafnkellos/k8s_argo_infrastructure
     targetRevision: AddJenking
-    path: base/example-api
+    path: overlays/test/base/example-api
   destination:
     server: https://kubernetes.default.svc
     namespace: demo
