@@ -77,6 +77,14 @@ sudo cat $KUBECONFIG_PATH
 echo -e "\n----------------------------------------"
 echo "=== END OF KUBECONFIG ==="
 
+# Install Traefik Middleware CRD if not present
+if ! k3s kubectl get crd middlewares.traefik.io &>/dev/null; then
+    echo "Installing Traefik Middleware CRD..."
+    k3s kubectl apply -f https://raw.githubusercontent.com/traefik/traefik/v2.10/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
+else
+    echo "Traefik Middleware CRD already installed."
+fi
+
 # Apply the base configuration
 echo "Applying base configuration..."
 k3s kubectl apply -k base/
