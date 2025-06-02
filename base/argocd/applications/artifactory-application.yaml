@@ -35,16 +35,22 @@ spec:
             extraVolumeMounts:
               - name: nginx-logs
                 mountPath: /var/log/nginx
+              - name: nginx-conf
+                mountPath: /var/opt/jfrog/nginx
             extraVolumes:
               - name: nginx-logs
                 emptyDir: {}
+              - name: nginx-conf
+                emptyDir: {}
             initContainers:
-              - name: init-nginx-logs
+              - name: init-nginx-dirs
                 image: busybox
-                command: ['sh', '-c', 'mkdir -p /var/log/nginx && chmod 777 /var/log/nginx']
+                command: ['sh', '-c', 'mkdir -p /var/log/nginx /var/opt/jfrog/nginx/logrotate && chmod -R 777 /var/log/nginx /var/opt/jfrog/nginx']
                 volumeMounts:
                   - name: nginx-logs
                     mountPath: /var/log/nginx
+                  - name: nginx-conf
+                    mountPath: /var/opt/jfrog/nginx
           postgresql:
             enabled: false
           systemYaml:
