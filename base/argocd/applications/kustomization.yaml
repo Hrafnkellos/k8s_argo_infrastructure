@@ -9,5 +9,7 @@ resources:
   - postgresql-application.yaml
   - nginx-application.yaml
   - nginx-config.yaml
+  - nginx-setup.yaml
+  - jenkins-middleware.yaml
   #- jenkins-namespace.yaml
   #- artifactory-namespace.yaml

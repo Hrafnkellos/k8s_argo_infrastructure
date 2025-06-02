@@ -50,7 +50,7 @@ spec:
             initContainers:
               - name: setup-dirs
                 image: busybox
-                command: ["sh", "-c", "mkdir -p /var/opt/jfrog/nginx/logrotate /var/opt/jfrog/nginx/logs /var/log/nginx && chown -R 1030:107 /var/opt/jfrog/nginx /var/log/nginx && chmod -R 775 /var/opt/jfrog/nginx /var/log/nginx"]
+                command: ["/bin/sh", "/scripts/setup.sh"]
                 securityContext:
                   runAsUser: 0
                 volumeMounts:
@@ -58,12 +58,18 @@ spec:
                     mountPath: /var/opt/jfrog/nginx
                   - name: nginx-logs
                     mountPath: /var/log/nginx
+                  - name: setup-script
+                    mountPath: /scripts
             extraVolumeMounts:
               - name: nginx-logs
                 mountPath: /var/log/nginx
             extraVolumes:
               - name: nginx-logs
                 emptyDir: {}
+              - name: setup-script
+                configMap:
+                  name: nginx-setup-script
+                  defaultMode: 0755
             nginxCustomConfigMap: artifactory-nginx-config
             nginxCustomServerBlockConfigMap: artifactory-nginx-server-block
   destination:

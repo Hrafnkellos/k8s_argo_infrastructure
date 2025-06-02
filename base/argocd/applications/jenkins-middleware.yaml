@@ -1,0 +1,10 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: jenkins-strip-prefix
+  namespace: jenkins
+spec:
+  stripPrefix:
+    prefixes:
+      - /jenkins
+    forceSlash: false 
