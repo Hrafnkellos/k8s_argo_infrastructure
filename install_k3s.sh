@@ -70,7 +70,7 @@ echo "=== END OF KUBECONFIG ==="
 
 # Apply the base configuration
 echo "Applying base configuration..."
-k3s kubectl apply -k base/
+k3s kubectl apply -k overlays/test
 
 # Run post-installation tasks
 echo "Running post-installation tasks..."

@@ -15,7 +15,28 @@ spec:
       releaseName: artifactory-oss
       values: |
         artifactory:
-          masterKey: "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+          masterKeySecretName: artifactory-master-key
+          masterKeySecretKey: master-key
+          extraVolumeMounts:
+            - name: master-key
+              mountPath: /opt/jfrog/artifactory/etc/security/master.key
+              subPath: master.key
+            - name: system-yaml
+              mountPath: /opt/jfrog/router/var/etc/system.yaml
+              subPath: system.yaml
+          extraVolumes:
+            - name: master-key
+              secret:
+                secretName: artifactory-master-key
+                items:
+                  - key: master-key
+                    path: master.key
+            - name: system-yaml
+              configMap:
+                name: artifactory-system-yaml
+                items:
+                  - key: system.yaml
+                    path: system.yaml
           service:
             type: ClusterIP
           resources:
@@ -40,23 +61,6 @@ spec:
               failureThreshold: 30
           postgresql:
             enabled: false
-          systemYaml:
-            shared:
-              database:
-                type: postgresql
-                driver: org.postgresql.Driver
-                url: jdbc:postgresql://artifactory-postgresql:5432/artifactory
-                username: ${POSTGRES_USER}
-                password: ${POSTGRES_PASSWORD}
-              node:
-                ip: artifactory-nginx
-                port: 8080
-                haEnabled: false
-              router:
-                entrypoints:
-                  externalPort: 8080
-                  internalPort: 8081
-                  sslEnabled: false
           startupProbe:
             initialDelaySeconds: 120
             periodSeconds: 10
