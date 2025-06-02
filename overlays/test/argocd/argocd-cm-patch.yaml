@@ -4,5 +4,4 @@ metadata:
   name: argocd-cm
   namespace: argocd
 data:
-  url: 192.168.45.238/argocd
-  rootpath: /argocd 
+  url: 192.168.45.238/argocd  # This can be changed per environment 

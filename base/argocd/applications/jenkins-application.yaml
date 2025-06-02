@@ -17,7 +17,7 @@ spec:
             enabled: true
             path: /jenkins
             pathType: Prefix
-            host: 192.168.45.238
+            host: $(JENKINS_HOST)
   destination:
     server: https://kubernetes.default.svc
     namespace: jenkins
