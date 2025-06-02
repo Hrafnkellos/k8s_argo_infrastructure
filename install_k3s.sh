@@ -3,6 +3,23 @@
 # Exit on any error
 set -e
 
+# Function to wait for deployments to be ready
+wait_for_deployments() {
+    echo "Waiting for deployments to be ready..."
+    echo "This may take a few minutes..."
+    
+    # Wait for ArgoCD
+    echo "Waiting for ArgoCD..."
+    k3s kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd || true
+    
+    # Wait for Jenkins
+    echo "Waiting for Jenkins..."
+    k3s kubectl wait --for=condition=available --timeout=300s deployment/jenkins -n jenkins || true
+    
+    echo "Giving deployments time to initialize..."
+    sleep 10
+}
+
 echo "Starting k3s installation process..."
 
 # Uninstall k3s if it exists
@@ -30,43 +47,45 @@ sleep 10
 # Update kubeconfig with the correct IP
 echo "Updating kubeconfig with machine IP..."
 KUBECONFIG_PATH="/etc/rancher/k3s/k3s.yaml"
-if [ -f "$KUBECONFIG_PATH" ]; then
-    # Ensure proper permissions on the k3s.yaml file
-    sudo chmod 644 $KUBECONFIG_PATH
-    sudo chown root:$CURRENT_GROUP $KUBECONFIG_PATH
-    
-    # Debug: Show the current server URL
-    echo "Current server URL in kubeconfig:"
-    sudo grep "server:" $KUBECONFIG_PATH
-    
-    # Update the server URL with the machine's IP (handle both 127.0.0.1 and 0.0.0.0)
-    echo "Replacing IP addresses with $MACHINE_IP..."
-    sudo sed -i "s|https://127.0.0.1:6443|https://$MACHINE_IP:6443|g" $KUBECONFIG_PATH
-    sudo sed -i "s|https://0.0.0.0:6443|https://$MACHINE_IP:6443|g" $KUBECONFIG_PATH
-    
-    # Debug: Show the new server URL
-    echo "New server URL in kubeconfig:"
-    sudo grep "server:" $KUBECONFIG_PATH
-    
-    echo "Kubeconfig has been updated"
-    
-    # Print kubeconfig for Lens
-    echo -e "\n=== KUBECONFIG FOR LENS (COPY BELOW THIS LINE) ==="
-    echo "----------------------------------------"
-    sudo cat $KUBECONFIG_PATH 
-    echo -e "\n----------------------------------------"
-    echo "=== END OF KUBECONFIG ==="
-else
-    echo "Error: k3s kubeconfig not found at $KUBECONFIG_PATH"
-    exit 1
-fi
 
-# Verify the configuration
-echo "Verifying kubectl configuration..."
-if kubectl cluster-info &>/dev/null; then
-    echo "kubectl is properly configured and can connect to the cluster"
-else
-    echo "Warning: kubectl configuration might not be correct. Please check the server URL in kubeconfig"
-fi
+# if the kubeconfig file does not exist, exit
+[ ! -f "$KUBECONFIG_PATH" ] && echo "Error: k3s kubeconfig not found at $KUBECONFIG_PATH" && exit 1
 
-echo "k3s installation and configuration completed successfully!" 
+# Ensure proper permissions on the k3s.yaml file
+sudo chmod 644 $KUBECONFIG_PATH
+sudo chown root:$CURRENT_GROUP $KUBECONFIG_PATH
+
+# Debug: Show the current server URL
+echo "Current server URL in kubeconfig:"
+sudo grep "server:" $KUBECONFIG_PATH
+
+# Update the server URL with the machine's IP (handle both 127.0.0.1 and 0.0.0.0)
+echo "Replacing IP addresses with $MACHINE_IP..."
+sudo sed -i "s|https://127.0.0.1:6443|https://$MACHINE_IP:6443|g" $KUBECONFIG_PATH
+sudo sed -i "s|https://0.0.0.0:6443|https://$MACHINE_IP:6443|g" $KUBECONFIG_PATH
+
+# Debug: Show the new server URL
+echo "New server URL in kubeconfig:"
+sudo grep "server:" $KUBECONFIG_PATH
+
+echo "Kubeconfig has been updated"
+
+# Print kubeconfig for Lens
+echo -e "\n=== KUBECONFIG FOR LENS (COPY BELOW THIS LINE) ==="
+echo "----------------------------------------"
+sudo cat $KUBECONFIG_PATH 
+echo -e "\n----------------------------------------"
+echo "=== END OF KUBECONFIG ==="
+
+# Apply the base configuration
+echo "Applying base configuration..."
+k3s kubectl apply -k base/
+
+# Wait for deployments to be ready
+wait_for_deployments
+
+# Run post-installation tasks
+echo "Running post-installation tasks..."
+./post_install.sh
+
+echo "k3s installation and configuration completed" 
