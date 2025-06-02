@@ -15,6 +15,7 @@ spec:
       releaseName: artifactory-oss
       values: |
         artifactory:
+          masterKey: "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
           service:
             type: ClusterIP
           resources:
@@ -32,6 +33,11 @@ spec:
             enabled: true
             service:
               type: ClusterIP
+            startupProbe:
+              initialDelaySeconds: 60
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 30
           postgresql:
             enabled: false
           systemYaml:
@@ -51,6 +57,21 @@ spec:
                   externalPort: 8080
                   internalPort: 8081
                   sslEnabled: false
+          startupProbe:
+            initialDelaySeconds: 120
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
+          livenessProbe:
+            initialDelaySeconds: 180
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            initialDelaySeconds: 180
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
   destination:
     server: https://kubernetes.default.svc
     namespace: artifactory
