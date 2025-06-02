@@ -7,6 +7,3 @@ resources:
   - jenkins-application.yaml
   - artifactory-application.yaml
   - postgresql-application.yaml
-  - jenkins-middleware.yaml
-  #- jenkins-namespace.yaml
-  #- artifactory-namespace.yaml
