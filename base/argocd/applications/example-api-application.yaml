@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/hrafnkell/k8s_argo_infrastructure.git
-    targetRevision: HEAD
+    targetRevision: master
     path: base/example-api
   destination:
     server: https://kubernetes.default.svc
