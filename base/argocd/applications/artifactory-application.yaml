@@ -29,7 +29,9 @@ spec:
             size: 20Gi
             mountPath: "/var/opt/jfrog/artifactory"
           nginx:
-            enabled: false
+            enabled: true
+            service:
+              type: ClusterIP
           postgresql:
             enabled: false
           systemYaml:
