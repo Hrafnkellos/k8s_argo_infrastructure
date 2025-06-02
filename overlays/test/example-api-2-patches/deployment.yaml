@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-api-2
+  namespace: demo-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: example-api-2
+      

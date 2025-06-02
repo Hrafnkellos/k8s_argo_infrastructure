@@ -1,18 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: jenkins-ingress
-  namespace: jenkins
+  name: example-api-ingress-2
+  namespace: demo-2
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.entrypoints: web
 spec:
   rules:
     - http:
         paths:
-          - path: /jenkins
+          - path: /jonjonson
             pathType: Prefix
             backend:
               service:
-                name: jenkins
+                name: example-api-service-2
                 port:
-                  number: 8080 
+                  number: 80
