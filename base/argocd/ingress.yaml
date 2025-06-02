@@ -6,15 +6,10 @@ metadata:
 spec:
   entryPoints:
     - web
-    - websecure
   routes:
-    - match: Host(`*`) && PathPrefix(`/argocd`)
+    - match: Host(`192.168.45.238`) && PathPrefix(`/`)
       kind: Rule
       services:
         - name: argocd-server
           port: 80
-      middlewares:
-        - name: argocd-strip-prefix
-          namespace: argocd
-  tls:
-    secretName: argocd-server-tls 
+          scheme: http 

@@ -3,9 +3,5 @@ kind: Kustomization
 
 namespace: argocd
 resources:
-  #- argocd-application.yaml
-  #- jenkins-application.yaml
   - example-api-application.yaml
   - example-api-2-application.yaml
-  #- artifactory-application.yaml
-  #- postgresql-application.yaml

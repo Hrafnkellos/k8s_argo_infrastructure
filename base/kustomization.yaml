@@ -5,4 +5,4 @@ resources:
   - argocd
   - example-api
   - example-api-2
-  #- sealed-secrets
+  - sealed-secrets
