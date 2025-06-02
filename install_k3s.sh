@@ -53,10 +53,9 @@ if [ -f "$KUBECONFIG_PATH" ]; then
     # Print kubeconfig for Lens
     echo -e "\n=== KUBECONFIG FOR LENS (COPY BELOW THIS LINE) ==="
     echo "----------------------------------------"
-    sudo cat $KUBECONFIG_PATH | base64 -w 0
+    sudo cat $KUBECONFIG_PATH 
     echo -e "\n----------------------------------------"
     echo "=== END OF KUBECONFIG ==="
-    kubectl config view --minify
 else
     echo "Error: k3s kubeconfig not found at $KUBECONFIG_PATH"
     exit 1
