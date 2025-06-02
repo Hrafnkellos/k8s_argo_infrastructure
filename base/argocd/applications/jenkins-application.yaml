@@ -15,9 +15,6 @@ spec:
           jenkinsUriPrefix: /jenkins
           ingress:
             enabled: true
-            annotations:
-              traefik.ingress.kubernetes.io/router.entrypoints: web
-              traefik.ingress.kubernetes.io/router.middlewares: jenkins-strip-prefix@kubernetescrd
             path: /jenkins
             pathType: Prefix
             host: 192.168.45.238

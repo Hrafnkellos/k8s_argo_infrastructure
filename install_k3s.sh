@@ -3,23 +3,6 @@
 # Exit on any error
 set -e
 
-# Function to wait for deployments to be ready
-wait_for_deployments() {
-    echo "Waiting for deployments to be ready..."
-    echo "This may take a few minutes..."
-    
-    # Wait for ArgoCD
-    echo "Waiting for ArgoCD..."
-    k3s kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd || true
-    
-    # Wait for Jenkins
-    echo "Waiting for Jenkins..."
-    k3s kubectl wait --for=condition=available --timeout=300s deployment/jenkins -n jenkins || true
-    
-    echo "Giving deployments time to initialize..."
-    sleep 10
-}
-
 echo "Starting k3s installation process..."
 
 # Uninstall k3s if it exists
@@ -88,9 +71,6 @@ echo "=== END OF KUBECONFIG ==="
 # Apply the base configuration
 echo "Applying base configuration..."
 k3s kubectl apply -k base/
-
-# Wait for deployments to be ready
-wait_for_deployments
 
 # Run post-installation tasks
 echo "Running post-installation tasks..."
