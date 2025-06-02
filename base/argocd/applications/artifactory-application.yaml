@@ -32,6 +32,7 @@ spec:
             enabled: true
             service:
               type: ClusterIP
+            customConfigMap: artifactory-nginx-config
           postgresql:
             enabled: false
           systemYaml:
