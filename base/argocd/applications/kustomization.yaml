@@ -5,6 +5,6 @@ namespace: argocd
 resources:
   - argocd-application.yaml
   - jenkins-application.yaml
-  - example-api-application.yaml
+  #- example-api-application.yaml
   #- artifactory-application.yaml
   #- postgresql-application.yaml
