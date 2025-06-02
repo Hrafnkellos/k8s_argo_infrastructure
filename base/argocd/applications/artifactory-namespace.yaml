@@ -1,8 +1,0 @@
-# apiVersion: v1
-# kind: Namespace
-# metadata:
-#   name: artifactory
-#   labels:
-#     name: artifactory
-#     app.kubernetes.io/name: artifactory
-#     app.kubernetes.io/part-of: artifactory 
