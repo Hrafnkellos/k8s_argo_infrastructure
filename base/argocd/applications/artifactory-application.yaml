@@ -32,7 +32,19 @@ spec:
             enabled: true
             service:
               type: ClusterIP
-            customConfigMap: artifactory-nginx-config
+            extraVolumeMounts:
+              - name: nginx-logs
+                mountPath: /var/log/nginx
+            extraVolumes:
+              - name: nginx-logs
+                emptyDir: {}
+            initContainers:
+              - name: init-nginx-logs
+                image: busybox
+                command: ['sh', '-c', 'mkdir -p /var/log/nginx && chmod 777 /var/log/nginx']
+                volumeMounts:
+                  - name: nginx-logs
+                    mountPath: /var/log/nginx
           postgresql:
             enabled: false
           systemYaml:
