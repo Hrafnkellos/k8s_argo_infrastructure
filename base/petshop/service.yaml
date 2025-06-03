@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: petstore-api
+  namespace: petshop
+  labels:
+    app: petstore-api
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: petstore-api 
