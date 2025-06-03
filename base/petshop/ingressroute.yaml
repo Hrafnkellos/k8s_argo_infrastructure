@@ -1,0 +1,18 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: petstore-api
+  namespace: petshop
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`192.168.45.238`) && PathPrefix(`/petstore`)
+      kind: Rule
+      services:
+        - name: petstore-api
+          port: 80
+      middlewares:
+        - name: petstore-strip-prefix
+          namespace: petshop
+  tls: {} 
