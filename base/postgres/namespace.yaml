@@ -1,0 +1,5 @@
+# needs to run first so we name the file 0_asdf.yml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: postgres-server

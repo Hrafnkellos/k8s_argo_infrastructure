@@ -47,7 +47,11 @@ The project is organized into the following directories:
 2. **Install environment**
   
   ```bash
+  # setup default
   kubectl apply -k base
+
+  # setup dev environment
+  kubectl apply -k overlays/test
   ```
 
 3. **Customize Your Environment**
@@ -184,3 +188,49 @@ Feel free to submit issues or pull requests for improvements or additional featu
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Sealed Secret (Bitbucket Repository) Template
+
+This section describes how to create (or reseal) a sealed secret (for example, for your Bitbucket repository) using the provided seal-secret.sh script.
+
+### Prerequisites
+
+• kubeseal (installed (e.g. via brew or from the sealed–secrets release))  
+• A running sealed–secrets controller (so that you can fetch the public cert)  
+• An unsealed secret (template) (for example, “bitbucket-repo.yaml”) (see below)
+
+### Unsealed Secret Template (Example)
+
+Below is an example (unsealed) secret (for example, “bitbucket-repo.yaml”) (for ArgoCD’s repository secret) that you can use as a template. (Replace sensitive values (like your SSH private key) as needed.)
+
+```yaml
+# (Example: overlays/test/sealed-secrets/bitbucket-repo.yaml)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bitbucket-repo
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+stringData:
+  type: git
+  url: git@bitbucket.org:rldevrldev/rl-kubeinfrastructure.git
+  sshPrivateKey: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    (your SSH private key (or token) goes here)
+    -----END OPENSSH PRIVATE KEY-----
+  insecure: "true"  # (Optional) Skip host key verification (if needed)
+```
+
+### Resealing (or Generating) the Sealed Secret
+
+1. (Optional) Ensure that your unsealed secret (template) (for example, “bitbucket-repo.yaml”) is present (for example, in “overlays/test/sealed-secrets”).  
+2. Run the seal-secret.sh script (located in “scripts/”) (after making it executable (e.g. chmod +x scripts/seal-secret.sh)).  
+   • (The script checks (or fetches) the sealed–secrets controller’s public cert (from “pub-cert.pem”) and then seals your unsealed secret (using kubeseal) into “overlays/test/sealed-secrets/sealed-bitbucket-repo.yaml”.)  
+3. (Optional) (If you uncomment the “kubectl apply” line in seal-secret.sh) the sealed secret is applied automatically.  
+   • (Otherwise, you can apply it manually (e.g. “kubectl apply –f overlays/test/sealed-secrets/sealed-bitbucket-repo.yaml”).)
+
+### Notes
+
+• (If you reset (or delete) your cluster, the sealed–secrets controller’s private key (and hence the sealed secret) will be lost. In that case, reinstall sealed–secrets (so that a new private key is generated) and then re-run seal-secret.sh (or reseal your secret) so that it can be unsealed in the new cluster.)  
+• (Always ensure that your unsealed secret (template) (for example, “bitbucket-repo.yaml”) is not committed (or pushed) (so that sensitive data (like your SSH private key) is not exposed).)

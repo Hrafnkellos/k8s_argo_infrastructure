@@ -1,0 +1,28 @@
+apiVersion: v1
+appVersion: "1.0"
+description: Staging environment configuration
+name: my-app-staging
+version: 0.1.0
+
+replicaCount: 2
+
+image:
+  repository: my-app
+  tag: "staging"
+  pullPolicy: IfNotPresent
+
+service:
+  enabled: true
+  annotations: {}
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+  name: my-app-staging
+
+resources: {}
+  
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cat-api
+  namespace: cat
+  labels:
+    app: cat-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cat-api
+  template:
+    metadata:
+      labels:
+        app: cat-api
+    spec:
+      containers:
+      - name: cat-api
+        image: unfor19/docker-cats:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m" 

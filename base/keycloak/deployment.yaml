@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-app
+  namespace: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak-app
+  template:
+    metadata:
+      labels:
+        app: keycloak-app
+    spec:
+      containers:
+        - name: keycloak-app
+          image: quay.io/keycloak/keycloak:26.2
+#          resources:
+#            requests:
+#              memory: "12Mi"
+#              cpu: "2m"
+#            limits:
+#              memory: "32Mi"
+#              cpu: "50m"
+          args: ["start", "--log-level=DEBUG"]
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: keycloak-config-map
+          env:
+            - name: "KEYCLOAK_ADMIN_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-credentials
+                  key: keycloak-admin-password
+            - name: "KC_DB_PASSWORD"
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-credentials
+                  key: keycloak-db-password
+
+#          readinessProbe:
+#            httpGet:
+#              path: /actuator
+#              port: 8080                

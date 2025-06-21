@@ -5,3 +5,4 @@ namespace: argocd
 resources:
   - example-api-application.yaml
   - example-api-2-application.yaml
+  #- demo-api-application.yaml

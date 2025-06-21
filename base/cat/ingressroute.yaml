@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: cat-api
+  namespace: cat
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`192.168.45.238`) && PathPrefix(`/cat`)
+      kind: Rule
+      services:
+        - name: cat-api
+          port: 80
+          namespace: cat
+  tls: {} 
