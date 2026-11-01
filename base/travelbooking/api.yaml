@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: travelbooking-api
+spec:
+  selector:
+    app: travelbooking-api
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: travelbooking-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: travelbooking-api
+  template:
+    metadata:
+      labels:
+        app: travelbooking-api
+    spec:
+      containers:
+        - name: api
+          # No registry/CI publishes this yet; build and push it, then pin a tag
+          image: ghcr.io/hrafnkellos/travel-booking-api:latest
+          env:
+            - name: PUBLIC_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: travelbooking-config
+                  key: PUBLIC_URL
+            - name: ASPNETCORE_ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: travelbooking-config
+                  key: ASPNETCORE_ENVIRONMENT
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: travelbooking-secrets
+                  key: POSTGRES_PASSWORD
+            - name: ConnectionStrings__DefaultConnection
+              value: Host=postgres;Port=5432;Database=travelbooking;Username=travelbooking;Password=$(DB_PASSWORD)
+            - name: Keycloak__Authority
+              value: $(PUBLIC_URL)/auth/realms/travelbooking
+            - name: Keycloak__MetadataAddress
+              value: http://keycloak:8080/auth/realms/travelbooking/.well-known/openid-configuration
+            - name: Keycloak__Audience
+              value: travelbooking-api
+            - name: Keycloak__RequireHttpsMetadata
+              value: "false"
+            - name: Email__Provider
+              value: Console
+          ports:
+            - containerPort: 8080
+          # The API has no /health endpoint yet, so probe the port
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "50m"
+            limits:
+              memory: "512Mi"

@@ -1,0 +1,24 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: travelbooking
+resources:
+  - namespace.yaml
+  - postgres.yaml
+  - keycloak.yaml
+  - api.yaml
+  - ingress.yaml
+# The Secret `travelbooking-secrets` is NOT managed here; create it in the
+# cluster before syncing (see secret.example.yaml).
+configMapGenerator:
+  - name: travelbooking-config
+    literals:
+      # Public base URL the browser uses; must match what clients call, because
+      # it becomes the token issuer. Override per environment in the overlay.
+      - PUBLIC_URL=http://localhost
+      - ASPNETCORE_ENVIRONMENT=Production
+  - name: keycloak-realm
+    files:
+      - realm/travelbooking-realm.json
+  - name: postgres-initdb
+    files:
+      - postgres-initdb.sh

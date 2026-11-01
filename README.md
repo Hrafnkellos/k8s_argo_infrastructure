@@ -64,3 +64,29 @@ Feel free to submit issues or pull requests for improvements or additional featu
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## TravelBooking (`base/travelbooking`)
+
+Postgres + Keycloak 26.8.1 + the TravelBooking API in the `travelbooking` namespace.
+
+| Path    | Backend                          |
+|---------|----------------------------------|
+| `/api`  | TravelBooking API                |
+| `/auth` | Keycloak (admin at `/auth/admin`)|
+
+Before the first sync, create the secret (it is intentionally not in git):
+
+```sh
+kubectl create namespace travelbooking
+kubectl -n travelbooking create secret generic travelbooking-secrets \
+  --from-literal=POSTGRES_PASSWORD='...' \
+  --from-literal=KEYCLOAK_ADMIN=admin \
+  --from-literal=KEYCLOAK_ADMIN_PASSWORD='...'
+```
+
+`PUBLIC_URL` in `base/travelbooking/kustomization.yaml` must be the URL clients
+use to reach the cluster, because Keycloak stamps it into every token as the
+issuer. Override it per environment in the overlays.
+
+The realm in `base/travelbooking/realm/` is a copy of
+`Travel-booking-api/infra/keycloak/travelbooking-realm.json`. Keep them in sync.
