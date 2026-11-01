@@ -82,6 +82,10 @@ kubectl -n travelbooking create secret generic travelbooking-secrets \
   --from-literal=POSTGRES_PASSWORD='...' \
   --from-literal=KEYCLOAK_ADMIN=admin \
   --from-literal=KEYCLOAK_ADMIN_PASSWORD='...'
+
+# Only needed while the GHCR image is private. Token: classic PAT with read:packages
+kubectl -n travelbooking create secret docker-registry ghcr-pull \
+  --docker-server=ghcr.io --docker-username=Hrafnkellos --docker-password='<token>'
 ```
 
 `PUBLIC_URL` in `base/travelbooking/kustomization.yaml` must be the URL clients

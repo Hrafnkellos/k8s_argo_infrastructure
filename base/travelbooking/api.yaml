@@ -23,6 +23,10 @@ spec:
       labels:
         app: travelbooking-api
     spec:
+      # GHCR packages from a private repo are private; created by
+      # scripts/install-k3s.sh. If absent, the kubelet pulls anonymously.
+      imagePullSecrets:
+        - name: ghcr-pull
       containers:
         - name: api
           # No registry/CI publishes this yet; build and push it, then pin a tag
