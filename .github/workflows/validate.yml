@@ -1,0 +1,57 @@
+name: Validate
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  KUSTOMIZE_VERSION: v5.4.3
+  KUBECONFORM_VERSION: v0.6.7
+  # Kubernetes version to validate schemas against (K3s stable is 1.34.x)
+  K8S_VERSION: 1.34.0
+
+jobs:
+  manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install kustomize and kubeconform
+        run: |
+          curl -sSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" \
+            | tar xz -C /usr/local/bin kustomize
+          curl -sSL "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" \
+            | tar xz -C /usr/local/bin kubeconform
+
+      - name: Build and validate every overlay
+        run: |
+          set -euo pipefail
+          for overlay in overlays/*/; do
+            name=$(basename "$overlay")
+            echo "::group::$name"
+            kustomize build "$overlay" > "/tmp/$name.yaml"
+            # -ignore-missing-schemas: Argo CD CRDs and Applications have no
+            # upstream JSON schema; CRDs are fetched from the datree catalog.
+            kubeconform -strict -summary -ignore-missing-schemas \
+              -kubernetes-version "$K8S_VERSION" \
+              -schema-location default \
+              -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+              "/tmp/$name.yaml"
+            echo "::endgroup::"
+          done
+
+  scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: shellcheck
+        run: |
+          mapfile -t files < <(git ls-files '*.sh')
+          if [ ${#files[@]} -eq 0 ]; then echo "No shell scripts"; exit 0; fi
+          shellcheck "${files[@]}"
