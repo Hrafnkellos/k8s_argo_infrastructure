@@ -44,8 +44,19 @@ The project is organized into the following directories:
    git clone <repository-url>
    ```
 
-2. **Install environment**
-  
+2. **Install K3s and bootstrap Argo CD** (fresh Linux host)
+
+  ```bash
+  sudo ./scripts/install-k3s.sh
+  ```
+
+  Installs single-node K3s, copies the kubeconfig to `~/.kube/config`, creates
+  the secrets that are kept out of git, and installs Argo CD, which then syncs
+  `overlays/test`. Set `K3S_VERSION` to pin a release, or `SKIP_K3S=1` if K3s is
+  already installed.
+
+  On an existing cluster you can still apply everything directly:
+
   ```bash
   kubectl apply -k base
   ```
