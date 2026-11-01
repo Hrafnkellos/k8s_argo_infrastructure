@@ -12,6 +12,10 @@
 #   SKIP_K3S=1          skip the K3s install (cluster already running)
 #   TB_POSTGRES_PASSWORD, TB_KEYCLOAK_ADMIN_PASSWORD
 #                       passwords for the travelbooking secret; generated if unset
+#   GHCR_TOKEN          GitHub PAT with read:packages, for pulling the private
+#                       API image (prompted for if unset and run interactively;
+#                       leave empty to skip if the image is public)
+#   GHCR_USER           GitHub username for GHCR (default: Hrafnkellos)
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -59,6 +63,21 @@ if ! kubectl -n travelbooking get secret travelbooking-secrets >/dev/null 2>&1; 
     --from-literal=KEYCLOAK_ADMIN_PASSWORD="${TB_KEYCLOAK_ADMIN_PASSWORD:-$(gen)}"
 else
   log "travelbooking-secrets already exists, leaving it alone"
+fi
+
+# GHCR pull secret for the private API image. Re-running updates the token.
+if [[ -z "${GHCR_TOKEN:-}" && -t 0 ]]; then
+  read -rsp "GHCR token with read:packages (empty to skip): " GHCR_TOKEN; echo
+fi
+if [[ -n "${GHCR_TOKEN:-}" ]]; then
+  log "Creating/updating ghcr-pull secret"
+  kubectl -n travelbooking create secret docker-registry ghcr-pull \
+    --docker-server=ghcr.io \
+    --docker-username="${GHCR_USER:-Hrafnkellos}" \
+    --docker-password="$GHCR_TOKEN" \
+    --dry-run=client -o yaml | kubectl apply -f -
+else
+  log "No GHCR token given; skipping ghcr-pull (fine if the image is public)"
 fi
 
 # ── 3. Argo CD ──────────────────────────────────────────────────────────────

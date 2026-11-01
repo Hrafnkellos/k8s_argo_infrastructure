@@ -51,7 +51,8 @@ The project is organized into the following directories:
   ```
 
   Installs single-node K3s, copies the kubeconfig to `~/.kube/config`, creates
-  the secrets that are kept out of git, and installs Argo CD, which then syncs
+  the secrets that are kept out of git (including the `ghcr-pull` image pull
+  secret, from `GHCR_TOKEN` or a prompt), and installs Argo CD, which then syncs
   `overlays/test`. Set `K3S_VERSION` to pin a release, or `SKIP_K3S=1` if K3s is
   already installed.
 
